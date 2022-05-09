@@ -8,7 +8,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true}))
 
 
-require('./src/routes/client')(app)
+require('./routes/client')(app)
 
 
 app.listen(port, ()=>{

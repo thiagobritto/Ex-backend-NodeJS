@@ -1,7 +1,9 @@
 
 const str = require('./str')
 
-function cleanPropets(obj, list)
+const OBJ = {}
+
+OBJ.cleanPropets = function (obj, list)
 {
     const objClean = {}
 
@@ -14,7 +16,7 @@ function cleanPropets(obj, list)
     return objClean
 }
 
-function sanitizePropets(obj)
+OBJ.sanitizePropets = function (obj)
 {
     const objSanitize = {}
     
@@ -26,7 +28,4 @@ function sanitizePropets(obj)
 
 }
 
-module.exports = { 
-    cleanPropets, 
-    sanitizePropets 
-}
+module.exports = OBJ

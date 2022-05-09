@@ -4,7 +4,7 @@ const client = {
     name: 'client',
 
     filter: [
-        'firstName',
+        'first_name',
         'phone',
         'address',
         'district',

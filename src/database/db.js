@@ -1,27 +1,53 @@
+
+const obj = require('../functions/obj')
+
 const db = {}
 
 var table = ''
 var stmt = ''
 
-db.insert = async function (keys, values) 
-{
-    const bindPrepare = values.map( () => '?').join()
-    const bindKeys = keys.join()
+db.insert = async function (data) {
+    const keys = Object.keys(data)
+    const values = Object.values(data)
+    const bindParams = keys.map(() => '?')
 
-    stmt = `INSERT INTO ${table} (${bindKeys}) VALUES (${bindPrepare})`
-    
+    stmt = `INSERT INTO ${table} (${keys.join()}) VALUES (${bindParams.join()})`
+
     const conn = await connect();
     const [rows] = await conn.execute(stmt, values);
     return rows;
 }
 
-db.select = async function(arrayColumns = ['*'])
-{
-    stmt = `SELECT ${arrayColumns.join()} FROM ${table}`
+db.select = function (keys) {
+    stmt = `SELECT ${keys.join()} FROM ${table}`
+    return db
 }
 
-db.get = async function()
-{
+db.update = async function(data, id) {
+
+    const keys = Object.keys(data).join(' = ?, ')
+    const values = Object.values(data)
+    const [id_key] = Object.keys(id)
+    const [id_value] = Object.values(id)
+
+    stmt = `UPDATE ${table} SET ${keys} = ? WHERE ${id_key} = ?`
+
+    const conn = await connect();
+    const [rows] = await conn.execute(stmt, [...values, id_value]);
+    return rows;
+}
+
+db.where = function (key, value, cond = '=') {
+    stmt += ` WHERE ${key} ${cond} ${value}`
+    return db
+}
+
+db.whereAnd = function (key, value, cond = '=') {
+    stmt += ` AND ${key} ${cond} ${value}`
+    return db
+}
+
+db.get = async function () {
     const conn = await connect()
     const [rows] = await conn.query(stmt)
     return rows
@@ -29,8 +55,7 @@ db.get = async function()
 
 /* ============================================================================== */
 
-function connect() 
-{
+function connect() {
     if (global.connection && global.connection.state !== 'disconnected')
         return global.connection;
 
@@ -45,18 +70,17 @@ function connect()
         connectionLimit: 10,
         queueLimit: 0
     });
-    
-    const promisePool = pool.promise();    
-    
+
+    const promisePool = pool.promise();
+
     global.connection = promisePool;
     return promisePool;
 }
 
-function init(tb_name)
-{
+function init(tb_name) {
     table = tb_name
     stmt = `SELECT * FROM ${table}`
-    
+
     return db
 }
 
