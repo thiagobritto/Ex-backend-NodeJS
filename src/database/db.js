@@ -1,61 +1,98 @@
 
-const obj = require('../functions/obj')
-
 const db = {}
+
+
 
 var table = ''
 var stmt = ''
+var val = []
 
-db.insert = async function (data) {
+
+db.insert = async function (data) 
+{
     const keys = Object.keys(data)
-    const values = Object.values(data)
     const bindParams = keys.map(() => '?')
-
+    
     stmt = `INSERT INTO ${table} (${keys.join()}) VALUES (${bindParams.join()})`
+    val = Object.values(data)
 
-    const conn = await connect();
-    const [rows] = await conn.execute(stmt, values);
-    return rows;
+    return await exec()
 }
 
-db.select = function (keys) {
+
+
+db.select = function (keys) 
+{
     stmt = `SELECT ${keys.join()} FROM ${table}`
+    val = []
+    
     return db
 }
 
-db.update = async function(data, id) {
 
+
+db.update = async function(data, id) 
+{
     const keys = Object.keys(data).join(' = ?, ')
     const values = Object.values(data)
     const [id_key] = Object.keys(id)
     const [id_value] = Object.values(id)
-
+    
     stmt = `UPDATE ${table} SET ${keys} = ? WHERE ${id_key} = ?`
+    val = [...values, id_value]
 
-    const conn = await connect();
-    const [rows] = await conn.execute(stmt, [...values, id_value]);
-    return rows;
+    return await exec()
 }
 
-db.where = function (key, value, cond = '=') {
-    stmt += ` WHERE ${key} ${cond} ${value}`
-    return db
+
+
+db.delete = function(id)
+{
+    stmt = `DELETE FROM ${table}`
+    val = []
+
+    return { where: db.where }
 }
 
-db.whereAnd = function (key, value, cond = '=') {
-    stmt += ` AND ${key} ${cond} ${value}`
-    return db
+
+
+db.where = function (key, value, cond = '=') 
+{
+    stmt += ` WHERE ${key} ${cond} ?`
+    val = [ value ]
+    
+    return {...db, exec}
 }
 
-db.get = async function () {
+
+
+db.whereAnd = function (key, value, cond = '=') 
+{
+    stmt += ` AND ${key} ${cond} ?`
+    val.push( value )
+    
+    return {...db, exec}
+}
+
+
+
+db.get = exec
+
+async function exec() 
+{
     const conn = await connect()
-    const [rows] = await conn.query(stmt)
+    const [rows] = await conn.execute(stmt, val)
     return rows
 }
 
+
+
 /* ============================================================================== */
 
-function connect() {
+
+
+function connect() 
+{
     if (global.connection && global.connection.state !== 'disconnected')
         return global.connection;
 
@@ -77,11 +114,16 @@ function connect() {
     return promisePool;
 }
 
-function init(tb_name) {
+
+
+function init(tb_name) 
+{
     table = tb_name
     stmt = `SELECT * FROM ${table}`
 
     return db
 }
+
+
 
 module.exports = { table: init }

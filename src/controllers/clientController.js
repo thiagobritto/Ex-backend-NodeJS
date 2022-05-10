@@ -54,4 +54,19 @@ clientController.update = async function(req, res)
     }
 }
 
+clientController.remove = async function(req, res)
+{
+    try{
+
+        const {id} = req.params
+        
+        res.json(
+            await client.delete(id)
+        )
+
+    } catch(error){
+        res.status(400).json(error)
+    }
+}
+
 module.exports = clientController

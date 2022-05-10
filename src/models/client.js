@@ -1,9 +1,11 @@
-const model = require(".")
+const CRUD = require("./CRUD")
 
 const client = {
+    ...CRUD,
+
     name: 'client',
 
-    filter: [
+    fillable: [
         'first_name',
         'phone',
         'address',
@@ -13,7 +15,6 @@ const client = {
 
     hidder: [],
 
-    ...model
 }
 
 module.exports = client

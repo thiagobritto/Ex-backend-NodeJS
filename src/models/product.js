@@ -1,17 +1,14 @@
-const model = require(".")
+const CRUD = require("./CRUD")
 
-const client = {
+const product = {
+    ...CRUD,
+
     name: 'product',
 
-    filter: [
-        
-    ],
+    fillable: [],
 
-    hidder: [
+    hidder: [],
 
-    ],
-
-    ...model
 }
 
-module.exports = client
+module.exports = product
