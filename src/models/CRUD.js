@@ -8,24 +8,30 @@ const UserException = require('../exceptions/UserException')
 const CRUD = {}
 
 
+
 CRUD.all = async function () {
     this.check()
 
-    const all = await db.table(this.name).get()
+    const res = await db.table(this.name).get()
 
-    const resHidder = await hidder(this.hidder, all)
+    const resHidder = await hidder(this.hidder, res)
     return resHidder
 }
 
 
 
 CRUD.find = async function (id) {
+    id = parseInt(id, 10)
+    
+    if (!id)
+        throw new UserException("invalid params ..: 'id'")
+    
     const { hidder } = this.check(true)
 
     const res = await db.table(this.name).where(`id_${this.name}`, id).get()
 
     if (res.length <= 0)
-        throw new UserException('not found', 404)
+        throw new UserException('register not found', 404)
 
     const [resHidder] = await hidder(this.hidder, res)
     return resHidder
@@ -49,6 +55,11 @@ CRUD.insert = async function (data) {
 
 
 CRUD.update = async function (data, id) {
+    id = parseInt(id, 10)
+    
+    if (!id)
+        throw new UserException("invalid params ..: 'id'")
+    
     this.check(true).fillable(this.fillable, data)
 
     const res = await db.table(this.name).update(
@@ -68,7 +79,7 @@ CRUD.delete = async function(id)
 {
     this.check()
     
-    id = Number.parseInt(id)
+    id = parseInt(id, 10)
     
     if (!id)
         throw new UserException('invalid params')

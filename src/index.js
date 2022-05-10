@@ -9,6 +9,7 @@ app.use(express.urlencoded({ extended: true}))
 
 
 require('./routes/client')(app)
+require('./routes/product')(app)
 
 
 app.listen(port, ()=>{

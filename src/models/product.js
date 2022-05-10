@@ -5,7 +5,10 @@ const product = {
 
     name: 'product',
 
-    fillable: [],
+    fillable: [
+        'description',
+        'price'
+    ],
 
     hidder: [],
 
