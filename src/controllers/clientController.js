@@ -1,67 +1,55 @@
+const express = require('express')
+const router = express.Router()
+
 const client = require('../models/client')
 
-const clientController = {}
+
+router.post('/register', async function (req, res) {
+    try {
+        res.json(await client.insert(req.body))
+    } catch (error) {
+        res.status(400).json(error)
+    }
+})
 
 
-
-clientController.list = async function (req, res) {
+router.get('/list', async function (req, res) {
     try {
         res.json(await client.all())
     } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-clientController.select = async function (req, res) {
+router.get('/:id', async function (req, res) {
     try {
         const { id } = req.params
-        res.json( await client.find(id) )
-
+        res.json(await client.find(id))
     } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-clientController.register = async function (req, res) {
+router.put('/:id', async function (req, res) {
     try {
-
-        res.json( await client.insert(req.body) )
-
-    } catch (error) {
-        res.status(400).json(error)
-    }
-}
-
-
-
-clientController.update = async function (req, res) {
-    try {
-
         const { id } = req.params
-
-        res.json( await client.update(req.body, id) )
-
+        res.json(await client.update(req.body, id))
     } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-clientController.remove = async function (req, res) {
+router.delete('/:id', async function (req, res) {
     try {
-
         const { id } = req.params
-
-        res.json( await client.delete(id) )
-
+        res.json(await client.delete(id))
     } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
-module.exports = clientController
+
+module.exports = api => api.use('/client', router) 

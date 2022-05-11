@@ -1,65 +1,54 @@
+const express = require('express')
+const router = express.Router()
+
 const product = require('../models/product')
 
-const productController = {}
 
-
-productController.register = async function(req, res)
-{
-    try{
-        res.json( await product.insert(req.body) )
-    } catch(error){
+router.post('/register', async function (req, res) {
+    try {
+        res.json(await product.insert(req.body))
+    } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-productController.list = async function(req, res)
-{
-    try{
-        res.json( await product.all() )
-    } catch(error){
+router.get('/list', async function (req, res) {
+    try {
+        res.json(await product.all())
+    } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-productController.select = async function(req, res)
-{
-    try{
+router.get('/:id', async function (req, res) {
+    try {
         const { id } = req.params
-        res.json( await product.find(id) )
-
-    } catch(error){
+        res.json(await product.find(id))
+    } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-productController.update = async function(req, res)
-{
-    try{
-        const {id} = req.params
-        res.json( await product.update(req.body, id) )
-    } catch(error){
+router.put('/:id', async function (req, res) {
+    try {
+        const { id } = req.params
+        res.json(await product.update(req.body, id))
+    } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
 
-
-productController.remove = async function(req, res)
-{
-    try{
-        
+router.delete('/:id', async function (req, res) {
+    try {
         let { id } = req.params
-        res.json( await product.delete(id) )
-        
-    } catch(error){
+        res.json(await product.delete(id))
+    } catch (error) {
         res.status(400).json(error)
     }
-}
+})
 
-module.exports = productController
+module.exports = api => api.use('/product', router) 
