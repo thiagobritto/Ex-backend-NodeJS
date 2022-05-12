@@ -4,7 +4,7 @@ const router = express.Router()
 const client = require('../models/client')
 
 
-router.post('/register', async function (req, res) {
+router.post('/register', async (req, res) => {
     try {
         res.json(await client.insert(req.body))
     } catch (error) {
@@ -13,7 +13,7 @@ router.post('/register', async function (req, res) {
 })
 
 
-router.get('/list', async function (req, res) {
+router.get('/list', async (req, res) => {
     try {
         res.json(await client.all())
     } catch (error) {
@@ -22,7 +22,20 @@ router.get('/list', async function (req, res) {
 })
 
 
-router.get('/:id', async function (req, res) {
+router.get('/name/:query/:limit', async (req, res) => {
+    try {
+        const { query, limit } = req.params
+        const rows = await client.searchLimit(
+            'first_name', query, limit
+        )
+        res.json(rows)
+    } catch (error) {
+        res.status(400).json(error)
+    }
+})
+
+
+router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params
         res.json(await client.find(id))
@@ -32,7 +45,7 @@ router.get('/:id', async function (req, res) {
 })
 
 
-router.put('/:id', async function (req, res) {
+router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params
         res.json(await client.update(req.body, id))
@@ -42,7 +55,7 @@ router.put('/:id', async function (req, res) {
 })
 
 
-router.delete('/:id', async function (req, res) {
+router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params
         res.json(await client.delete(id))

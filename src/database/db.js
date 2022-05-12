@@ -75,6 +75,26 @@ db.whereAnd = function (key, value, cond = '=')
 }
 
 
+db.orderBy = function(key, mod = 'ASC')
+{
+    stmt += ` ORDER BY ${key} ${mod}`
+    return db
+}
+
+
+db.limit = function(limit, ini = 0) {
+    if(ini <= 0){
+        stmt += ` LIMIT ?`
+        val.push( limit )
+    } else {
+        stmt += ` LIMIT ?, ?`
+        val.push( ini )
+        val.push( limit )
+    }
+    return db
+}
+
+
 
 db.get = exec
 
@@ -120,7 +140,7 @@ function init(tb_name)
 {
     table = tb_name
     stmt = `SELECT * FROM ${table}`
-
+    val = []
     return db
 }
 

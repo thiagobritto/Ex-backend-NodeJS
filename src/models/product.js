@@ -1,6 +1,7 @@
 const CRUD = require("./CRUD")
 
-const product = {
+module.exports = {
+    
     ...CRUD,
 
     name: 'product',
@@ -13,5 +14,3 @@ const product = {
     hidder: [],
 
 }
-
-module.exports = product

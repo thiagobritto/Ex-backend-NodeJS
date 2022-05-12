@@ -1,6 +1,7 @@
 const CRUD = require("./CRUD")
 
-const client = {
+module.exports = {
+    
     ...CRUD,
 
     name: 'client',
@@ -16,5 +17,3 @@ const client = {
     hidder: [],
 
 }
-
-module.exports = client
