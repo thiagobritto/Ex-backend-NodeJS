@@ -22,6 +22,19 @@ router.get('/list', async function (req, res) {
 })
 
 
+router.get('/desc/:query/:limit', async (req, res) => {
+    try{
+        const { query, limit } = req.params
+        const rows = await product.searchLimit(
+            'description', query, limit
+        )
+        res.json(rows)
+    } catch(error) {
+        res.status(400).json(error)
+    }
+})
+
+
 router.get('/:id', async function (req, res) {
     try {
         const { id } = req.params

@@ -8,11 +8,10 @@ var stmt = ''
 var val = []
 
 
-db.insert = async function (data) 
-{
+db.insert = async function (data) {
     const keys = Object.keys(data)
     const bindParams = keys.map(() => '?')
-    
+
     stmt = `INSERT INTO ${table} (${keys.join()}) VALUES (${bindParams.join()})`
     val = Object.values(data)
 
@@ -21,23 +20,21 @@ db.insert = async function (data)
 
 
 
-db.select = function (keys) 
-{
+db.select = function (keys) {
     stmt = `SELECT ${keys.join()} FROM ${table}`
     val = []
-    
+
     return db
 }
 
 
 
-db.update = async function(data, id) 
-{
+db.update = async function (data, id) {
     const keys = Object.keys(data).join(' = ?, ')
     const values = Object.values(data)
     const [id_key] = Object.keys(id)
     const [id_value] = Object.values(id)
-    
+
     stmt = `UPDATE ${table} SET ${keys} = ? WHERE ${id_key} = ?`
     val = [...values, id_value]
 
@@ -46,8 +43,7 @@ db.update = async function(data, id)
 
 
 
-db.delete = function(id)
-{
+db.delete = function (id) {
     stmt = `DELETE FROM ${table}`
     val = []
 
@@ -55,41 +51,49 @@ db.delete = function(id)
 }
 
 
+db.join = function (tableJoin) {
+    stmt += ` JOIN ${tableJoin}`
+    return db
+}
 
-db.where = function (key, value, cond = '=') 
-{
+
+db.using = function (key) {
+    stmt += ` USING(${key})`
+    return db
+}
+
+
+db.where = function (key, value, cond = '=') {
     stmt += ` WHERE ${key} ${cond} ?`
-    val = [ value ]
-    
-    return {...db, exec}
+    val = [value]
+
+    return { ...db, exec }
 }
 
 
 
-db.whereAnd = function (key, value, cond = '=') 
-{
+db.whereAnd = function (key, value, cond = '=') {
     stmt += ` AND ${key} ${cond} ?`
-    val.push( value )
-    
-    return {...db, exec}
+    val.push(value)
+
+    return { ...db, exec }
 }
 
 
-db.orderBy = function(key, mod = 'ASC')
-{
+db.orderBy = function (key, mod = 'ASC') {
     stmt += ` ORDER BY ${key} ${mod}`
     return db
 }
 
 
-db.limit = function(limit, ini = 0) {
-    if(ini <= 0){
+db.limit = function (limit, ini = 0) {
+    if (ini <= 0) {
         stmt += ` LIMIT ?`
-        val.push( limit )
+        val.push(limit)
     } else {
         stmt += ` LIMIT ?, ?`
-        val.push( ini )
-        val.push( limit )
+        val.push(ini)
+        val.push(limit)
     }
     return db
 }
@@ -98,8 +102,7 @@ db.limit = function(limit, ini = 0) {
 
 db.get = exec
 
-async function exec() 
-{
+async function exec() {
     const conn = await connect()
     const [rows] = await conn.execute(stmt, val)
     return rows
@@ -111,8 +114,7 @@ async function exec()
 
 
 
-function connect() 
-{
+function connect() {
     if (global.connection && global.connection.state !== 'disconnected')
         return global.connection;
 
@@ -136,9 +138,13 @@ function connect()
 
 
 
-function init(tb_name) 
-{
-    table = tb_name
+function init(tb_name, alias = '') {
+    if (alias) {
+        table = tb_name + ' AS ' + alias
+    } else {
+        table = tb_name
+    }
+
     stmt = `SELECT * FROM ${table}`
     val = []
     return db

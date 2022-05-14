@@ -40,7 +40,7 @@ CRUD.find = async function (id) {
 }
 
 
-CRUD.searchLimit = async function (column, value, limit) {
+CRUD.searchLimit = async function (key, value, limit) {
     limit = parseInt(limit, 10)
     value = str.escapeHtml(value)
 
@@ -50,8 +50,8 @@ CRUD.searchLimit = async function (column, value, limit) {
     const { hidder } = this.check(true)
 
     const res = await db.table(this.name)
-        .where(column, `%${value}%`, 'LIKE')
-        .orderBy(column)
+        .where(key, `%${value}%`, 'LIKE')
+        .orderBy(key)
         .limit(limit.toString())
         .get()
 
