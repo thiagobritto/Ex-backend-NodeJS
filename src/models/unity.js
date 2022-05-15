@@ -4,15 +4,11 @@ module.exports = {
 
 	...CRUD,
 
-	name: 'client',
+	name: 'unity',
 
 	fillable: [
-		'first_name',
-		'phone',
-		'address',
-		'district',
-		'city'
-	],
+    'name'
+  ],
 
 	hidder: [],
 

@@ -1,6 +1,6 @@
 const db = require('../database/db')
-const obl = require('../functions/obj')
-const str = require('../functions/str')
+const obl = require('../services/common/obj')
+const str = require('../services/common/str')
 const SystemException = require('../exceptions/SystemException')
 const UserException = require('../exceptions/UserException')
 
@@ -12,54 +12,54 @@ const CRUD = {}
  * @returns {object} all data of database 
  */
 CRUD.all = async function () {
-    this.check()
+	this.check()
 
-    const res = await db.table(this.name).get()
+	const res = await db.table(this.name).get()
 
-    const resHidder = await hidder(this.hidder, res)
-    return resHidder
+	const resHidder = await hidder(this.hidder, res)
+	return resHidder
 }
 
 
 
 CRUD.find = async function (id) {
-    id = parseInt(id, 10)
+	id = parseInt(id, 10)
 
-    if (!id)
-        throw new UserException("invalid params ..: 'id'")
+	if (!id)
+		throw new UserException("invalid params ..: 'id'")
 
-    const { hidder } = this.check(true)
+	const { hidder } = this.check(true)
 
-    const res = await db.table(this.name).where(`id_${this.name}`, id).get()
+	const res = await db.table(this.name).where(`id_${this.name}`, id).get()
 
-    if (res.length <= 0)
-        throw new UserException('register not found', 404)
+	if (res.length <= 0)
+		throw new UserException('register not found', 404)
 
-    const [resHidder] = await hidder(this.hidder, res)
-    return resHidder
+	const [resHidder] = await hidder(this.hidder, res)
+	return resHidder
 }
 
 
 CRUD.searchLimit = async function (key, value, limit) {
-    limit = parseInt(limit, 10)
-    value = str.escapeHtml(value)
+	limit = parseInt(limit, 10)
+	value = str.escapeHtml(value)
 
-    if (!limit)
-        throw new UserException("invalid params ..: 'limit'")
+	if (!limit)
+		throw new UserException("invalid params ..: 'limit'")
 
-    const { hidder } = this.check(true)
+	const { hidder } = this.check(true)
 
-    const res = await db.table(this.name)
-        .where(key, `%${value}%`, 'LIKE')
-        .orderBy(key)
-        .limit(limit.toString())
-        .get()
+	const res = await db.table(this.name)
+		.where(key, `%${value}%`, 'LIKE')
+		.orderBy(key)
+		.limit(limit.toString())
+		.get()
 
-    if (res.length <= 0)
-        throw new UserException('register not found', 404)
+	if (res.length <= 0)
+		throw new UserException('register not found', 404)
 
-    const resHidder = await hidder(this.hidder, res)
-    return resHidder
+	const resHidder = await hidder(this.hidder, res)
+	return resHidder
 }
 
 
@@ -69,69 +69,69 @@ CRUD.searchLimit = async function (key, value, limit) {
  * @returns {object} feedback
  */
 CRUD.insert = async function (data) {
-    this.check(true).fillable(this.fillable, data)
+	this.check(true).fillable(this.fillable, data)
 
-    const res = await db.table(this.name).insert(
-        obl.sanitizePropets(data)
-    )
+	const res = await db.table(this.name).insert(
+		obl.sanitizePropets(data)
+	)
 
-    if (!res.affectedRows)
-        throw new UserException('insert error!')
+	if (!res.affectedRows)
+		throw new UserException('insert error!')
 
-    return { message: 'insert success!' }
+	return { message: 'insert success!' }
 }
 
 
 
 CRUD.update = async function (data, id) {
-    id = parseInt(id, 10)
+	id = parseInt(id, 10)
 
-    if (!id)
-        throw new UserException("invalid params ..: 'id'")
+	if (!id)
+		throw new UserException("invalid params ..: 'id'")
 
-    this.check(true).fillable(this.fillable, data)
+	this.check(true).fillable(this.fillable, data)
 
-    const res = await db.table(this.name).update(
-        obl.sanitizePropets(data),
-        { [`id_${this.name}`]: id }
-    )
+	const res = await db.table(this.name).update(
+		obl.sanitizePropets(data),
+		{ [`id_${this.name}`]: id }
+	)
 
-    if (!res.affectedRows)
-        throw new UserException('updated error!')
+	if (!res.affectedRows)
+		throw new UserException('updated error!')
 
-    return { message: 'updated success!' }
+	return { message: 'updated success!' }
 }
 
 
 
 CRUD.delete = async function (id) {
-    this.check()
+	this.check()
 
-    id = parseInt(id, 10)
+	id = parseInt(id, 10)
 
-    if (!id)
-        throw new UserException('invalid params')
+	if (!id)
+		throw new UserException('invalid params')
 
-    const res = await db.table(this.name).delete().where(
-        `id_${this.name}`, id
-    ).exec()
+	const res = await db.table(this.name).delete().where(
+		`id_${this.name}`, id
+	).exec()
 
-    if (!res.affectedRows)
-        throw new UserException('delete error!')
+	if (!res.affectedRows)
+		throw new UserException('delete error!')
 
-    return { message: 'delete success!' }
+	return { message: 'delete success!' }
 }
 
 
 CRUD.check = function (implement = false) {
-    if (!this.name)
-        throw new SystemException('Name model required!', 500)
-    if (!this.fillable)
-        throw new SystemException('fillable model required!', 500)
-    if (!this.hidder)
-        throw new SystemException('hidder model required!', 500)
-    if (implement)
-        return { fillable, hidder }
+	if (!this.name)
+		throw new SystemException('Name model required!', 500)
+	if (!this.fillable)
+		throw new SystemException('fillable model required!', 500)
+	if (!this.hidder)
+		throw new SystemException('hidder model required!', 500)
+	if (implement)
+		return { fillable, hidder }
 }
 
 
@@ -142,14 +142,14 @@ CRUD.check = function (implement = false) {
  * @param {object} data 
  */
 function fillable(fillableArray, data) {
-    fillableArray.forEach(item => {
-        if (item in data) {
-            if (!data[item].trim())
-                throw new UserException(`${item} is empty!`)
-        } else {
-            throw new SystemException(`fillable: '${item}' not found`)
-        }
-    })
+	fillableArray.forEach(item => {
+		if (item in data) {
+			if (!data[item].trim())
+				throw new UserException(`${item} is empty!`)
+		} else {
+			throw new SystemException(`fillable: '${item}' not found`)
+		}
+	})
 }
 
 
@@ -161,20 +161,20 @@ function fillable(fillableArray, data) {
  * @returns 
  */
 function hidder(hidderArray, data) {
-    if (hidderArray.length <= 0)
-        return data
+	if (hidderArray.length <= 0)
+		return data
 
-    if (data.length <= 0)
-        return data
+	if (data.length <= 0)
+		return data
 
-    data.forEach(rowData => {
-        hidderArray.forEach(hidderData => {
-            if (hidderData in rowData)
-                rowData[hidderData] = undefined
-        })
-    })
+	data.forEach(rowData => {
+		hidderArray.forEach(hidderData => {
+			if (hidderData in rowData)
+				rowData[hidderData] = undefined
+		})
+	})
 
-    return data
+	return data
 }
 
 

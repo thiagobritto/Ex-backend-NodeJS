@@ -4,15 +4,11 @@ module.exports = {
 
 	...CRUD,
 
-	name: 'client',
+	name: 'category',
 
 	fillable: [
-		'first_name',
-		'phone',
-		'address',
-		'district',
-		'city'
-	],
+    'name'
+  ],
 
 	hidder: [],
 

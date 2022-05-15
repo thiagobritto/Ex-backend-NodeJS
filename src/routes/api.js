@@ -7,5 +7,7 @@ api.use(authMiddlewares)
 
 require('../controllers/clientController')(api)
 require('../controllers/productController')(api)
+require('../controllers/categoryController')(api)
+require('../controllers/unityController')(api)
 
 module.exports = app => app.use('/api', api) 
